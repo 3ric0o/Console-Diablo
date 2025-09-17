@@ -36,6 +36,10 @@
 *.exe
 *.out
 *.app
+console_diablo
 
 # debug information files
 *.dwo
+
+# Test files
+startup_test.log
