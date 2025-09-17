@@ -14,20 +14,20 @@ A console-based Diablo-style game with Pokemon-inspired movement and combat mech
 ## Controls
 
 ### Overworld Movement
-- `W` - Move up
-- `S` - Move down
-- `A` - Move left
-- `D` - Move right
-- `Q` - Quit game
+- `W` followed by Enter - Move up
+- `S` followed by Enter - Move down
+- `A` followed by Enter - Move left
+- `D` followed by Enter - Move right
+- `Q` followed by Enter - Quit game
 
 ### Combat
-- `1` - Attack
-- `2` - Item
-- `3` - Run
+- `1` followed by Enter - Attack
+- `2` followed by Enter - Item
+- `3` followed by Enter - Run
 
 ## How to Play
 
-1. Move around the map using WASD keys
+1. Move around the map using W/A/S/D keys followed by Enter
 2. Find monsters (M) to battle
 3. When you encounter a monster, the screen will flash (Pokemon-style)
 4. Choose your action from the combat menu
@@ -59,4 +59,5 @@ make clean
 ## Requirements
 
 - C++11 compatible compiler (g++)
-- Linux/Unix terminal (uses termios for input handling)
+- Standard C++ library only (no external dependencies)
+- Compatible with any system that supports standard C++

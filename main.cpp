@@ -4,9 +4,8 @@
 #include <string>
 #include <thread>
 #include <chrono>
-#include <termios.h>
-#include <unistd.h>
 #include <cstdlib>
+#include <iomanip>
 
 // Game constants
 const int MAP_WIDTH = 20;
@@ -72,25 +71,11 @@ private:
     std::vector<std::vector<char>> map;
     std::mt19937 rng;
     
-    // Cross-platform getch function
-    char getch() {
-        char buf = 0;
-        struct termios old = {0};
-        if (tcgetattr(0, &old) < 0)
-            perror("tcsetattr()");
-        old.c_lflag &= ~ICANON;
-        old.c_lflag &= ~ECHO;
-        old.c_cc[VMIN] = 1;
-        old.c_cc[VTIME] = 0;
-        if (tcsetattr(0, TCSANOW, &old) < 0)
-            perror("tcsetattr ICANON");
-        if (read(0, &buf, 1) < 0)
-            perror ("read()");
-        old.c_lflag |= ICANON;
-        old.c_lflag |= ECHO;
-        if (tcsetattr(0, TCSADRAIN, &old) < 0)
-            perror ("tcsetattr ~ICANON");
-        return (buf);
+    // Standard C++ input function
+    char getInput() {
+        char input;
+        std::cin >> input;
+        return input;
     }
     
     void initializeMap() {
@@ -112,20 +97,20 @@ private:
     }
     
     void clearScreen() {
+        // Use standard C++ approach
         system("clear");
     }
     
     void flashScreen() {
-        // Pokemon-style screen flash effect
+        // Pokemon-style screen flash effect using standard C++
         for (int i = 0; i < 3; i++) {
-            // Flash effect using ANSI escape codes
-            std::cout << "\033[41m"; // Red background
-            std::cout << "\033[2J\033[H"; // Clear screen and move cursor to top
-            std::cout << "*** ENCOUNTER! ***";
-            std::cout << "\033[0m"; // Reset colors
-            std::this_thread::sleep_for(std::chrono::milliseconds(150));
+            clearScreen();
+            std::cout << std::string(50, '*') << std::endl;
+            std::cout << std::string(20, ' ') << "ENCOUNTER!" << std::string(20, ' ') << std::endl;
+            std::cout << std::string(50, '*') << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             
-            std::cout << "\033[2J\033[H"; // Clear screen
+            clearScreen();
             std::this_thread::sleep_for(std::chrono::milliseconds(150));
         }
     }
@@ -148,7 +133,7 @@ private:
             std::cout << "\n";
         }
         
-        std::cout << "\nControls: WASD to move, Q to quit\n";
+        std::cout << "\nControls: Enter W/A/S/D followed by Enter to move, Q to quit\n";
         std::cout << "Find monsters (M) to battle!\n";
     }
     
@@ -161,11 +146,11 @@ private:
         
         char choice;
         while (true) {
-            choice = getch();
+            choice = getInput();
             if (choice >= '1' && choice <= '3') {
-                std::cout << choice << "\n";
                 return choice - '1'; // Convert to 0-based index
             }
+            std::cout << "Invalid choice. Please enter 1, 2, or 3: ";
         }
     }
     
@@ -193,8 +178,9 @@ private:
                     
                     if (enemy.health <= 0) {
                         std::cout << "You defeated the " << enemy.name << "!\n";
-                        std::cout << "Press any key to continue...\n";
-                        getch();
+                        std::cout << "Press Enter to continue...\n";
+                        std::cin.ignore();
+                        std::cin.get();
                         return;
                     }
                     
@@ -204,8 +190,9 @@ private:
                     
                     if (player.health <= 0) {
                         std::cout << "You have been defeated!\n";
-                        std::cout << "Game Over! Press any key to exit...\n";
-                        getch();
+                        std::cout << "Game Over! Press Enter to exit...\n";
+                        std::cin.ignore();
+                        std::cin.get();
                         exit(0);
                     }
                     break;
@@ -215,13 +202,15 @@ private:
                     break;
                 case RUN:
                     std::cout << "You ran away safely!\n";
-                    std::cout << "Press any key to continue...\n";
-                    getch();
+                    std::cout << "Press Enter to continue...\n";
+                    std::cin.ignore();
+                    std::cin.get();
                     return;
             }
             
-            std::cout << "Press any key to continue...\n";
-            getch();
+            std::cout << "Press Enter to continue...\n";
+            std::cin.ignore();
+            std::cin.get();
             clearScreen();
         }
     }
@@ -248,7 +237,8 @@ public:
             if (currentState == OVERWORLD) {
                 drawOverworld();
                 
-                char input = getch();
+                std::cout << "Enter command (w/a/s/d to move, q to quit): ";
+                char input = getInput();
                 
                 if (input == 'q' || input == 'Q') {
                     break;
